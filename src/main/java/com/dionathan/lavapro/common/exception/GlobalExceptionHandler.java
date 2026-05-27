@@ -52,6 +52,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ExceptionResponseDTO> handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.NOT_FOUND;
+
+        ExceptionResponseDTO error = new ExceptionResponseDTO(
+                status.value(),
+                "Recurso não encontrado",
+                ex.getMessage(),
+                request.getRequestURI(),
+                request.getMethod(),
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(status).body(error);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponseDTO> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
 
@@ -76,4 +94,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
 
     }
+
+
 }

@@ -43,10 +43,11 @@ public class JwtService {
                     .build();
 
             DecodedJWT decodedJWT = verifier.verify(tokenJwt);
+            System.out.println(Long.parseLong(decodedJWT.getSubject()));
             return Long.parseLong(decodedJWT.getSubject());
 
         } catch (JWTVerificationException exception){
-            throw new RuntimeException("Token JWT inválido ou expirado");
+            throw new JWTVerificationException("Token JWT inválido ou expirado");
         }
     }
 }

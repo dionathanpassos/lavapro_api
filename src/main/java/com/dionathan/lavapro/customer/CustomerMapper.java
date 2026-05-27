@@ -1,4 +1,53 @@
 package com.dionathan.lavapro.customer;
 
+import com.dionathan.lavapro.company.Company;
+import com.dionathan.lavapro.customer.dto.CustomerRequestDTO;
+import com.dionathan.lavapro.customer.dto.CustomerResponseDTO;
+import com.dionathan.lavapro.customer.dto.CustomerUpdateRequestDTO;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
 public class CustomerMapper {
+
+    public Customer toEntity(CustomerRequestDTO requestDTO, Company company) {
+        Customer customer = new Customer();
+
+        customer.setName(requestDTO.name());
+        customer.setPhone(requestDTO.phone());
+        customer.setCompany(company);
+
+        return customer;
+
+    }
+
+    public CustomerResponseDTO fromEntity(Customer customer) {
+        return new CustomerResponseDTO(
+                customer.getId(),
+                customer.getName(),
+                customer.getPhone(),
+                customer.getCreatedAt(),
+                customer.getUpdatedAt(),
+                customer.getDeletedAt()
+        );
+    }
+
+    public List<CustomerResponseDTO> fromEntity(List<Customer> customers) {
+        return customers.stream().map(this::fromEntity).toList();
+    }
+
+    public Customer updateToEntity(CustomerUpdateRequestDTO requestDTO, Customer customer) {
+
+        if(requestDTO.name() != null) {
+            customer.setName(requestDTO.name());
+        }
+        if(requestDTO.phone() != null) {
+            customer.setPhone(requestDTO.phone());
+        }
+
+
+        return customer;
+
+    }
 }

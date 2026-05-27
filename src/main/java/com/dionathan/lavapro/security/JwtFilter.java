@@ -37,6 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     null,
                     user.getAuthorities()
             );
+            System.out.println(user.getAuthorities());
 
             authenticationToken.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request)
@@ -51,6 +52,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private String recoverToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
+
 
         if( authHeader == null || !authHeader.startsWith("Bearer ")) {
             return null;

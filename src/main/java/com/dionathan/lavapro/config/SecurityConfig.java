@@ -1,5 +1,7 @@
 package com.dionathan.lavapro.config;
 
+import com.dionathan.lavapro.common.exception.CustomAccessDanieHandler;
+import com.dionathan.lavapro.common.exception.CustomAuthenticationEntryPoint;
 import com.dionathan.lavapro.security.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +23,12 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
+    @Autowired
+    CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    @Autowired
+    CustomAccessDanieHandler customAccessDanieHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         httpSecurity
@@ -28,8 +36,15 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                        .requestMatchers("/api/customers/**").hasRole("OWNER")
+                        .requestMatchers("/api/vehicles/**").hasRole("OWNER")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDanieHandler)
+                )
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();

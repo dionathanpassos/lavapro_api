@@ -1,7 +1,7 @@
 package com.dionathan.lavapro.common.exception;
 
-public class ResoucesNotFoundException extends RuntimeException{
-    public ResoucesNotFoundException(String message) {
+public class ResourceNotFoundException extends RuntimeException{
+    public ResourceNotFoundException(String message) {
         super(message);
     }
 }
