@@ -5,6 +5,7 @@ import com.dionathan.lavapro.vehicle.dto.VehicleResponseDTO;
 import com.dionathan.lavapro.vehicle.dto.VehicleUpdateRequestDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.flywaydb.core.extensibility.VerbExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +60,13 @@ public class VehicleController {
         Page<VehicleResponseDTO> vehicles = vehicleService.findAll(pageable);
 
         return ResponseEntity.ok(vehicles);
+    }
+
+    @GetMapping("/plate/{plate}")
+    public ResponseEntity<VehicleResponseDTO> findByPlate(@PathVariable String plate) {
+        VehicleResponseDTO vehicle = vehicleService.findByPlate(plate);
+
+        return ResponseEntity.ok(vehicle);
     }
 
 

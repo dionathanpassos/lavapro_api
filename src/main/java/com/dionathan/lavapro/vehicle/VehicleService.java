@@ -111,7 +111,20 @@ public class VehicleService {
         return vehicleRepository.findAllByCompanyAndDeletedAtIsNull(company, pageable).map(vehicleMapper::fromEntity);
     }
 
+    @Transactional(readOnly = true)
+    public VehicleResponseDTO findByPlate(String plate) {
+
+        Company company = getCurrentCompany();
+
+        Vehicle vehicle = vehicleRepository.findByPlateAndCompanyAndDeletedAtIsNull(plate, company)
+                .orElseThrow(() -> new ResourceNotFoundException("Veículo não encontrado"));
+
+        return vehicleMapper.fromEntity(vehicle);
+    }
+
     private Company getCurrentCompany() {
         return authenticatedUserService.getAuthenticatedUser().getCompany();
     }
+
+
 }

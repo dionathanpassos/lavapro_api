@@ -17,4 +17,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     Page<Vehicle> findAllByCompanyAndDeletedAtIsNull(Company company, Pageable pageable);
 
     boolean existsByPlateAndCompanyAndIdNot(String plate, Company company, Long id);
+
+    Optional<Vehicle> findByPlateAndCompanyAndDeletedAtIsNull(String plate, Company company);
 }
