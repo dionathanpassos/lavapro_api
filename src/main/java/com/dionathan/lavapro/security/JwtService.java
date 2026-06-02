@@ -28,7 +28,7 @@ public class JwtService {
                     .withSubject(user.getId().toString())
                     .withClaim("role", user.getRole().name())
                     .withClaim("companyId", user.getCompany().getId())
-                    .withExpiresAt(Instant.now().plus(2, ChronoUnit.HOURS))
+                    .withExpiresAt(Instant.now().plus(60, ChronoUnit.HOURS))
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
             throw new RuntimeException("Erro ao gerar o token jwt", exception);

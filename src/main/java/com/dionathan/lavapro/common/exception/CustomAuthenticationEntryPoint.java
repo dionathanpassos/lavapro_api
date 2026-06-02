@@ -34,7 +34,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                 null
         );
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("appication/json");
+        response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
         response.getWriter().write(objectMapper.writeValueAsString(error));

@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers("/api/customers/**").hasRole("OWNER")
                         .requestMatchers("/api/vehicles/**").hasRole("OWNER")
+                        .requestMatchers("/api/service-orders/**").hasRole("OWNER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

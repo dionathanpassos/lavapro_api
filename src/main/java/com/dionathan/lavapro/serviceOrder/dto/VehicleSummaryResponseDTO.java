@@ -1,20 +1,16 @@
-package com.dionathan.lavapro.vehicle.dto;
+package com.dionathan.lavapro.serviceOrder.dto;
 
 import com.dionathan.lavapro.customer.dto.CustomerResponseDTO;
 import com.dionathan.lavapro.customer.dto.CustomerSummaryResponseDTO;
 
 import java.time.LocalDateTime;
 
-public record VehicleResponseDTO(
+public record VehicleSummaryResponseDTO(
         Long id,
         String plate,
         String model,
         String brand,
-        String color,
-        Integer year,
-        CustomerSummaryResponseDTO customer,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        LocalDateTime deletedAt
+        CustomerSummaryResponseDTO customer
+
 ) {
 }

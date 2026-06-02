@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record CustomerSummaryResponseDTO(
         Long id,
-        String nome,
+        String name,
         String phone
 
 ) {
