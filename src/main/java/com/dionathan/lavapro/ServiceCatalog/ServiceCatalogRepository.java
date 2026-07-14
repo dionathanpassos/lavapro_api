@@ -17,4 +17,6 @@ public interface ServiceCatalogRepository extends JpaRepository<ServiceCatalog, 
     Page<ServiceCatalog> findAllByCompany(Company company, Pageable pageable);
 
     boolean existsByCompanyAndNameIgnoreCase(Company company, String name);
+
+    Optional<ServiceCatalog> findByIdAndCompanyAndActiveIsTrue(Long id, Company company);
 }

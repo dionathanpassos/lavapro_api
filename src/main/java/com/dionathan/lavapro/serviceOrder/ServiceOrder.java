@@ -2,6 +2,7 @@ package com.dionathan.lavapro.serviceOrder;
 
 import com.dionathan.lavapro.common.exception.BusinessException;
 import com.dionathan.lavapro.company.Company;
+import com.dionathan.lavapro.serviceOrderitem.ServiceOrderItem;
 import com.dionathan.lavapro.vehicle.Vehicle;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "service_orders")
@@ -54,6 +57,13 @@ public class ServiceOrder {
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
+    @OneToMany(
+            mappedBy = "serviceOrder",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ServiceOrderItem> items = new ArrayList<>();
+
     public void start() {
         if( status != ServiceOrderStatus.WAITING) {
             throw new BusinessException("Somente ordem aguardando podem ser iniciadas");
@@ -74,13 +84,30 @@ public class ServiceOrder {
     }
 
     public void deliver() {
-
         if (status != ServiceOrderStatus.READY) {
             throw new BusinessException(
                     "Somente ordens prontas podem ser ser entregues."
             );
         }
-
         this.status = ServiceOrderStatus.DELIVERED;
+    }
+
+    public void recalculateTotal() {
+        this.totalAmount = items.stream()
+                .map(ServiceOrderItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public void validateCanModify() {
+        if(!status.allowsChanges()) {
+            throw new BusinessException("Não é possível alterar itens desta ordem de serviço.");
+        }
+    }
+
+    public void removeItem(ServiceOrderItem item) {
+        items.remove(item);
+        item.setServiceOrder(null);
+        recalculateTotal();
+
     }
 }

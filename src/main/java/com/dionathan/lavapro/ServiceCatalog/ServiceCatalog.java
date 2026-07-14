@@ -1,5 +1,6 @@
 package com.dionathan.lavapro.ServiceCatalog;
 
+import com.dionathan.lavapro.common.exception.BusinessException;
 import com.dionathan.lavapro.company.Company;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -53,5 +54,11 @@ public class ServiceCatalog {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
+
+    public void validateIsActive() {
+        if(!isActive()) {
+            throw new BusinessException("Produto ou serviço desativado.");
+        }
+    }
 
 }

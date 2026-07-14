@@ -5,5 +5,9 @@ public enum ServiceOrderStatus {
     IN_PROGRESS,
     READY,
     DELIVERED,
-    CANCELLED
+    CANCELLED;
+
+    public boolean allowsChanges() {
+        return this != DELIVERED && this != CANCELLED;
+    }
 }

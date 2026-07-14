@@ -1,4 +1,18 @@
 package com.dionathan.lavapro.serviceOrderitem.dto;
 
-public class ServiceOrderItemRequestDTO {
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+public record ServiceOrderItemResponseDTO(
+        Long id,
+        Long serviceOrderId,
+        Long serviceCatalogId,
+        Integer quantity,
+        BigDecimal unitPrice,
+        BigDecimal totalPrice,
+        String serviceName,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
+
+) {
 }
