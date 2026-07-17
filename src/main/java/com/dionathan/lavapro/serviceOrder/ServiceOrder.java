@@ -110,4 +110,10 @@ public class ServiceOrder {
         recalculateTotal();
 
     }
+
+    public void validateCanReceivePayment() {
+        if(!status.allowsPayments()) {
+            throw new BusinessException("Não e possível pagar uma OS cancelada");
+        }
+    }
 }

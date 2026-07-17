@@ -5,6 +5,8 @@ import com.dionathan.lavapro.ServiceCatalog.ServiceCatalogRepository;
 import com.dionathan.lavapro.common.exception.BusinessException;
 import com.dionathan.lavapro.common.exception.ResourceNotFoundException;
 import com.dionathan.lavapro.company.Company;
+import com.dionathan.lavapro.payment.PaymentRepository;
+import com.dionathan.lavapro.payment.PaymentStatus;
 import com.dionathan.lavapro.security.AuthenticatedUserService;
 import com.dionathan.lavapro.serviceOrder.ServiceOrder;
 import com.dionathan.lavapro.serviceOrder.ServiceOrderRepository;
@@ -31,6 +33,7 @@ public class ServiceOrderItemService {
     private final ServiceOrderRepository serviceOrderRepository;
     private final ServiceCatalogRepository serviceCatalogRepository;
     private final ServiceOrderItemRepository serviceOrderItemRepository;
+    private final PaymentRepository paymentRepository;
 
     @Transactional
     public ServiceOrderItemResponseDTO create(Long serviceOrderId, ServiceOrderItemRequestDTO requestDTO) {
@@ -43,6 +46,7 @@ public class ServiceOrderItemService {
         ServiceCatalog serviceCatalog = serviceCatalogRepository.findByIdAndCompany(requestDTO.serviceCatalogId(), company)
                 .orElseThrow(() -> new ResourceNotFoundException("Serviço ou produto não encontrado"));
 
+        validateServiceOrderNotPaid(serviceOrder);
         serviceCatalog.validateIsActive();
         serviceOrder.validateCanModify();
 
@@ -78,10 +82,12 @@ public class ServiceOrderItemService {
         ServiceOrderItem serviceOrderItem = serviceOrderItemRepository.findByIdAndCompany(itemId, company)
                 .orElseThrow(() -> new ResourceNotFoundException("Item não encontrado."));
 
+        ServiceOrder serviceOrder = serviceOrderItem.getServiceOrder();
 
-        serviceOrderItem.getServiceOrder().validateCanModify();
+        validateServiceOrderNotPaid(serviceOrder);
+        serviceOrder.validateCanModify();
         serviceOrderItem.changeQuantity(requestDTO.quantity());
-        serviceOrderItem.getServiceOrder().recalculateTotal();
+        serviceOrder.recalculateTotal();
 
         return serviceOrderItemMapper.fromEntity(serviceOrderItem);
 
@@ -95,7 +101,9 @@ public class ServiceOrderItemService {
 
         ServiceOrder serviceOrder = serviceOrderItem.getServiceOrder();
 
-        serviceOrderItem.getServiceOrder().validateCanModify();
+        validateServiceOrderNotPaid(serviceOrder);
+
+        serviceOrder.validateCanModify();
         serviceOrder.removeItem(serviceOrderItem);
 
         serviceOrderItemRepository.delete(serviceOrderItem);
@@ -103,6 +111,12 @@ public class ServiceOrderItemService {
 
     private Company getCurrentCompany() {
         return authenticatedUserService.getAuthenticatedUser().getCompany();
+    }
+
+    public void validateServiceOrderNotPaid(ServiceOrder serviceOrder) {
+        if(paymentRepository.existsByServiceOrderAndPaymentStatus(serviceOrder, PaymentStatus.PAID)) {
+            throw new BusinessException("Não é possível alterar itens de uma Ordem de Serviço já paga.");
+        }
     }
 
 
