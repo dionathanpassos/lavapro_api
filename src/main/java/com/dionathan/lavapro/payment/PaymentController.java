@@ -4,6 +4,8 @@ import com.dionathan.lavapro.payment.dto.PaymentResponseDTO;
 import com.dionathan.lavapro.payment.dto.PaymentRequestDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -39,8 +41,8 @@ public class PaymentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PaymentResponseDTO>> findAll() {
-        List<PaymentResponseDTO> payments = paymentService.findAll();
+    public ResponseEntity<Page<PaymentResponseDTO>> findAll(Pageable pageable) {
+        Page<PaymentResponseDTO> payments = paymentService.findAll(pageable);
 
         return ResponseEntity.ok(payments);
     }

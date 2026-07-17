@@ -9,6 +9,8 @@ import com.dionathan.lavapro.security.AuthenticatedUserService;
 import com.dionathan.lavapro.serviceOrder.ServiceOrder;
 import com.dionathan.lavapro.serviceOrder.ServiceOrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,11 +57,12 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public List<PaymentResponseDTO> findAll() {
+    public Page<PaymentResponseDTO> findAll(Pageable pageable) {
         Company company = getCurrentCompany();
 
-        List<Payment> payments = paymentRepository.findAllByCompany(company);
-        return paymentMapper.fromEntity(payments);
+        Page<Payment> payments = paymentRepository.findAllByCompany(company, pageable);
+        return payments.map(paymentMapper::fromEntity);
+
     }
 
     @Transactional(readOnly = true)
