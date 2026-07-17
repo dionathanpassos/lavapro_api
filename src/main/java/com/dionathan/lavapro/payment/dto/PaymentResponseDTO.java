@@ -1,0 +1,20 @@
+package com.dionathan.lavapro.payment.dto;
+
+import com.dionathan.lavapro.payment.PaymentMethod;
+import com.dionathan.lavapro.payment.PaymentStatus;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+public record PaymentResponseDTO(
+        Long id,
+        BigDecimal amount,
+        PaymentMethod paymentMethod,
+        PaymentStatus paymentStatus,
+        LocalDateTime paidAt,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+        LocalDateTime canceledAt,
+        Long serviceOrderId
+) {
+}

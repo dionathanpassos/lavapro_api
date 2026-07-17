@@ -10,4 +10,8 @@ public enum ServiceOrderStatus {
     public boolean allowsChanges() {
         return this != DELIVERED && this != CANCELLED;
     }
+
+    public boolean allowsPayments() {
+        return this != CANCELLED;
+    }
 }
