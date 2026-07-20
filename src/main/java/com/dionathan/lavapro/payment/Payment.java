@@ -75,4 +75,10 @@ public class Payment {
         this.canceledAt = LocalDateTime.now();
     }
 
+    public void validateIsPaid() {
+        if (paymentStatus != PaymentStatus.PAID) {
+            throw new BusinessException("Somente pagamentos com registros podem gerar fluxo de caixa");
+        }
+    }
+
 }
