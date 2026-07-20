@@ -1,5 +1,6 @@
 package com.dionathan.lavapro.payment;
 
+import com.dionathan.lavapro.cashFlow.CashFlowService;
 import com.dionathan.lavapro.common.exception.BusinessException;
 import com.dionathan.lavapro.common.exception.ResourceNotFoundException;
 import com.dionathan.lavapro.company.Company;
@@ -24,6 +25,7 @@ public class PaymentService {
     private final ServiceOrderRepository serviceOrderRepository;
     private final AuthenticatedUserService authenticatedUserService;
     private final PaymentMapper paymentMapper;
+    private final CashFlowService cashFlowService;
 
     @Transactional
     public PaymentResponseDTO create(PaymentRequestDTO requestDTO) {
@@ -42,6 +44,7 @@ public class PaymentService {
         payment.markAsPaid();
 
         Payment saved = paymentRepository.save(payment);
+        cashFlowService.registerIncome(saved);
 
         return paymentMapper.fromEntity(saved);
     }
@@ -54,6 +57,8 @@ public class PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Pagamento não encontrado."));
 
         payment.cancel();
+        cashFlowService.registerRefund(payment);
+
     }
 
     @Transactional(readOnly = true)
