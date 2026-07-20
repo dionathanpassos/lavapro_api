@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -47,13 +49,29 @@ public class CashFlowService {
     }
 
     @Transactional(readOnly = true)
-    public List<CashFlowResponseDTO> findAll() {
+    public List<CashFlowResponseDTO> findAll(
+            CashFlowCategory category,
+            CashFlowType type,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
         Company company = getCurrentCompany();
 
-        List<CashFlow> cashFlows = cashFlowRepository.findAllByCompany(company);
+        if(startDate == null) {
+            startDate = LocalDate.now().withDayOfMonth(1);
+        }
+        if(endDate == null) {
+            endDate = LocalDate.now();
+        }
+
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(23,59,59);
+
+        List<CashFlow> cashFlows = cashFlowRepository.findAllByCompanyAndFilters(company, category, type, startDateTime, endDateTime);
 
         return cashFlowMapper.fromEntity(cashFlows);
     }
+
     @Transactional(readOnly = true)
     public CashFlowResponseDTO findById(Long id) {
         Company company = getCurrentCompany();
