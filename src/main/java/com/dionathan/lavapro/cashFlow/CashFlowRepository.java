@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,4 +32,17 @@ public interface CashFlowRepository extends JpaRepository<CashFlow, Long> {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate")LocalDateTime endDate
             );
+
+    @Query("SELECT COALESCE(SUM(c.amount), 0) FROM CashFlow c " +
+            "WHERE c.company = :company " +
+            "AND c.type = :type " +
+            "AND c.category = :category " +
+            "AND c.createdAt BETWEEN :startDate AND :endDate")
+    BigDecimal sumCashFlowByPeriodAndTypeAndCategory(
+            @Param("company") Company company,
+            @Param("type")CashFlowType type,
+            @Param("category")CashFlowCategory category,
+            @Param("startDate")LocalDateTime startDate,
+            @Param("endDate")LocalDateTime endDate
+    );
 }
