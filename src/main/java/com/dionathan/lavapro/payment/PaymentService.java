@@ -15,6 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -62,10 +65,27 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PaymentResponseDTO> findAll(Pageable pageable) {
+    public Page<PaymentResponseDTO> findAll(
+            PaymentMethod paymentMethod,
+            PaymentStatus paymentStatus,
+            LocalDate startDate,
+            LocalDate endDate,
+            Pageable pageable
+    ) {
         Company company = getCurrentCompany();
 
-        Page<Payment> payments = paymentRepository.findAllByCompany(company, pageable);
+        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDate end = (endDate != null) ? endDate : LocalDate.now();
+        LocalDateTime endDateTime = end.atTime(LocalTime.MAX);
+
+        Page<Payment> payments = paymentRepository.findAllByCompanyAndFilters(
+                company,
+                paymentMethod,
+                paymentStatus,
+                startDateTime,
+                endDateTime,
+                pageable
+        );
         return payments.map(paymentMapper::fromEntity);
 
     }
