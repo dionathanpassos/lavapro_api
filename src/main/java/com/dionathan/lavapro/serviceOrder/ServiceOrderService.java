@@ -16,7 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Service
 @RequiredArgsConstructor
@@ -86,15 +88,23 @@ public class ServiceOrderService {
 
 
     @Transactional(readOnly = true)
-    public Page<ServiceOrderResponseDTO> findAll(ServiceOrderStatus status, Pageable pageable) {
+    public Page<ServiceOrderResponseDTO> findAll(
+            ServiceOrderStatus status,
+            String customer,
+            String plate,
+            LocalDate startDate,
+            LocalDate endDate,
+            Pageable pageable
+    ) {
         Company company = getCurrentCompany();
 
-        if(status != null) {
-            return serviceOrderRepository.findAllByCompanyAndStatus(company, status, pageable).map(serviceOrderMapper::fromEntity);
-        }
+        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDate end = (endDate != null) ? endDate : LocalDate.now();
+        LocalDateTime endDateTime = end.atTime(LocalTime.MAX);
 
-        return serviceOrderRepository.findAllByCompanyAndDeletedAtIsNull(company, pageable).map(serviceOrderMapper::fromEntity);
+        Page<ServiceOrder> serviceOrders = serviceOrderRepository.findAllByCompanyAndFilters(company, status, customer, plate, startDateTime, endDateTime, pageable);
 
+        return serviceOrders.map(serviceOrderMapper::fromEntity);
     }
 
     @Transactional
