@@ -2,6 +2,10 @@ package com.dionathan.lavapro.cashFlow;
 
 import com.dionathan.lavapro.cashFlow.dto.CashFlowResponseDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +22,14 @@ public class CashFlowController {
     private final CashFlowService cashFlowService;
 
     @GetMapping
-    public ResponseEntity<List<CashFlowResponseDTO>> findAll(
+    public ResponseEntity<Page<CashFlowResponseDTO>> findAll(
             @RequestParam(required = false) CashFlowCategory category,
             @RequestParam(required = false) CashFlowType type,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
             ) {
-        List<CashFlowResponseDTO> cashFlows = cashFlowService.findAll(category, type, startDate, endDate);
+        Page<CashFlowResponseDTO> cashFlows = cashFlowService.findAll(category, type, startDate, endDate, pageable );
 
         return ResponseEntity.ok(cashFlows);
     }

@@ -84,11 +84,17 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CustomerResponseDTO> findAll(Pageable pageable) {
-
+    public Page<CustomerResponseDTO> findAll(
+            Pageable pageable,
+            String name,
+            String phone,
+            String plate
+    ) {
         Company company = getCurrentCompany();
 
-        return customerRepository.findAllByCompany(company, pageable).map(customerMapper::fromEntity);
+        Page<Customer> customers = customerRepository.findAllByCompanyAndFilters(pageable,company, name, phone, plate);
+
+        return customers.map(customerMapper::fromEntity);
     }
 
     private Company getCurrentCompany() {

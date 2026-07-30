@@ -6,11 +6,16 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -41,8 +46,14 @@ public class PaymentController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<PaymentResponseDTO>> findAll(Pageable pageable) {
-        Page<PaymentResponseDTO> payments = paymentService.findAll(pageable);
+    public ResponseEntity<Page<PaymentResponseDTO>> findAll(
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false) PaymentMethod paymentMethod,
+            @RequestParam(required = false) PaymentStatus paymentStatus,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate
+            ) {
+        Page<PaymentResponseDTO> payments = paymentService.findAll(paymentMethod, paymentStatus, startDate, endDate, pageable);
 
         return ResponseEntity.ok(payments);
     }

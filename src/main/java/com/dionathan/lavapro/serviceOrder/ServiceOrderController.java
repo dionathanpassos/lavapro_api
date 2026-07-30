@@ -7,11 +7,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/service-orders")
@@ -50,8 +54,15 @@ public class ServiceOrderController {
 
 
     @GetMapping
-    public ResponseEntity<Page<ServiceOrderResponseDTO>> findAdll(@RequestParam(required = false) ServiceOrderStatus status,Pageable pageable) {
-        Page<ServiceOrderResponseDTO> serviceOrders = serviceOrderService.findAll(status, pageable);
+    public ResponseEntity<Page<ServiceOrderResponseDTO>> findAll(
+            @RequestParam(required = false) ServiceOrderStatus status,
+            @RequestParam(required = false) String customer,
+            @RequestParam(required = false) String plate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<ServiceOrderResponseDTO> serviceOrders = serviceOrderService.findAll(status, customer, plate, startDate, endDate, pageable);
 
         return ResponseEntity.ok(serviceOrders);
     }

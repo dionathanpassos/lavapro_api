@@ -104,11 +104,19 @@ public class VehicleService {
     }
 
     @Transactional(readOnly = true)
-    public Page<VehicleResponseDTO> findAll(Pageable pageable) {
+    public Page<VehicleResponseDTO> findAll(
+            String plate,
+            String customer,
+            String model,
+            String brand,
+            Pageable pageable
+    ) {
 
         Company company = getCurrentCompany();
 
-        return vehicleRepository.findAllByCompanyAndDeletedAtIsNull(company, pageable).map(vehicleMapper::fromEntity);
+        Page<Vehicle> vehicles = vehicleRepository.findAllByCompanyAndFilters(company, plate, customer, model, brand, pageable);
+
+        return vehicles.map(vehicleMapper::fromEntity);
     }
 
     @Transactional(readOnly = true)

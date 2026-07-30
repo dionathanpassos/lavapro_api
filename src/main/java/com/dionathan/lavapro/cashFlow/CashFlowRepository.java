@@ -2,6 +2,9 @@ package com.dionathan.lavapro.cashFlow;
 
 import com.dionathan.lavapro.company.Company;
 import com.dionathan.lavapro.payment.Payment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,16 +24,18 @@ public interface CashFlowRepository extends JpaRepository<CashFlow, Long> {
 
 
     @Query("SELECT c FROM CashFlow c WHERE c.company = :company " +
-                    "AND (:category IS NULL OR c.category = :category) " +
-                    "AND (:type IS NULL OR c.type = :type) " +
-                    "AND c.createdAt BETWEEN :startDate AND :endDate"
+            "AND (:category IS NULL OR c.category = :category) " +
+            "AND (:type IS NULL OR c.type = :type) " +
+            "AND (:startDate IS NULL OR c.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR c.createdAt <= :endDate) "
     )
-    List<CashFlow> findAllByCompanyAndFilters(
+    Page<CashFlow> findAllByCompanyAndFilters(
             @Param("company") Company company,
             @Param("category") CashFlowCategory category,
             @Param("type") CashFlowType type,
             @Param("startDate") LocalDateTime startDate,
-            @Param("endDate")LocalDateTime endDate
+            @Param("endDate")LocalDateTime endDate,
+            Pageable pageable
             );
 
     @Query("SELECT COALESCE(SUM(c.amount), 0) FROM CashFlow c " +

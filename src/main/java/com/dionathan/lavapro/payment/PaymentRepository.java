@@ -34,4 +34,19 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             PaymentStatus paymentStatus,
             LocalDateTime startDateOfDay,
             LocalDateTime endDateOfDay);
+
+    @Query("SELECT p FROM Payment p " +
+            "WHERE p.company = :company " +
+            "AND (:paymentMethod IS NULL OR p.paymentMethod = :paymentMethod) " +
+            "AND (:paymentStatus IS NULL OR p.paymentStatus = :paymentStatus) " +
+            "AND (:startDate IS NULL OR p.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR p.createdAt <= :endDate) ")
+    Page<Payment> findAllByCompanyAndFilters(
+            Company company,
+            PaymentMethod paymentMethod,
+            PaymentStatus paymentStatus,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Pageable pageable
+    );
 }

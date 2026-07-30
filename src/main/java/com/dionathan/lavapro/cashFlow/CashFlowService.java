@@ -10,12 +10,16 @@ import com.dionathan.lavapro.payment.PaymentStatus;
 import com.dionathan.lavapro.security.AuthenticatedUserService;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -49,27 +53,22 @@ public class CashFlowService {
     }
 
     @Transactional(readOnly = true)
-    public List<CashFlowResponseDTO> findAll(
+    public Page<CashFlowResponseDTO> findAll(
             CashFlowCategory category,
             CashFlowType type,
             LocalDate startDate,
-            LocalDate endDate
+            LocalDate endDate,
+            Pageable pageable
     ) {
         Company company = getCurrentCompany();
 
-        if(startDate == null) {
-            startDate = LocalDate.now().withDayOfMonth(1);
-        }
-        if(endDate == null) {
-            endDate = LocalDate.now();
-        }
+        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDate end = (endDate != null) ? endDate : LocalDate.now();
+        LocalDateTime endDateTime = end.atTime(LocalTime.MAX);
 
-        LocalDateTime startDateTime = startDate.atStartOfDay();
-        LocalDateTime endDateTime = endDate.atTime(23,59,59);
+        Page<CashFlow> cashFlows = cashFlowRepository.findAllByCompanyAndFilters(company, category, type, startDateTime, endDateTime, pageable);
 
-        List<CashFlow> cashFlows = cashFlowRepository.findAllByCompanyAndFilters(company, category, type, startDateTime, endDateTime);
-
-        return cashFlowMapper.fromEntity(cashFlows);
+        return cashFlows.map(cashFlowMapper::fromEntity);
     }
 
     @Transactional(readOnly = true)
