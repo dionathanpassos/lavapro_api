@@ -12,7 +12,6 @@ public record VehicleResponseDTO(
         String brand,
         String color,
         Integer year,
-        CustomerSummaryResponseDTO customer,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime deletedAt

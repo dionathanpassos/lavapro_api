@@ -3,6 +3,7 @@ package com.dionathan.lavapro.customer;
 import com.dionathan.lavapro.common.exception.BusinessException;
 import com.dionathan.lavapro.common.exception.ResourceNotFoundException;
 import com.dionathan.lavapro.company.Company;
+import com.dionathan.lavapro.customer.dto.CustomerDetailsResponseDTO;
 import com.dionathan.lavapro.customer.dto.CustomerRequestDTO;
 import com.dionathan.lavapro.customer.dto.CustomerResponseDTO;
 import com.dionathan.lavapro.customer.dto.CustomerUpdateRequestDTO;
@@ -43,14 +44,14 @@ public class CustomerService {
         return customerMapper.fromEntity(saved);
     }
 
-    public CustomerResponseDTO findById(Long id) {
+    public CustomerDetailsResponseDTO findById(Long id) {
 
         Company company = getCurrentCompany();
 
-        Customer customer = customerRepository.findByIdAndCompany(id, company)
+        Customer customer = customerRepository.findByIdAndCompanyWithVehicles(id, company)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
 
-        return customerMapper.fromEntity(customer);
+        return customerMapper.fromEntityDetails(customer);
     }
 
     @Transactional

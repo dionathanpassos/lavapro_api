@@ -1,13 +1,17 @@
 package com.dionathan.lavapro.customer.dto;
 
-import java.time.LocalDateTime;
+import com.dionathan.lavapro.vehicle.dto.VehicleResponseDTO;
 
-public record CustomerResponseDTO(
+import java.time.LocalDateTime;
+import java.util.List;
+
+public record CustomerDetailsResponseDTO(
         Long id,
         String nome,
         String phone,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        LocalDateTime deletedAt
+        LocalDateTime deletedAt,
+        List<VehicleResponseDTO> vehicles
 ) {
 }

@@ -35,4 +35,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             String plate
 
     );
+
+    @Query("SELECT c FROM customer c " +
+            "LEFT JOIN FETCH c.vehicles " +
+            "WHERE c.company = :company " +
+            "AND c.id = :id ")
+    Optional<Customer> findByIdAndCompanyWithVehicles(Long id, Company company);
 }
