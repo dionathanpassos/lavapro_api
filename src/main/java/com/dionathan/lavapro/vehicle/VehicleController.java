@@ -1,5 +1,6 @@
 package com.dionathan.lavapro.vehicle;
 
+import com.dionathan.lavapro.vehicle.dto.VehicleDetailsResponseDTO;
 import com.dionathan.lavapro.vehicle.dto.VehicleRequestDTO;
 import com.dionathan.lavapro.vehicle.dto.VehicleResponseDTO;
 import com.dionathan.lavapro.vehicle.dto.VehicleUpdateRequestDTO;
@@ -38,8 +39,8 @@ public class VehicleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VehicleResponseDTO> findById(@PathVariable Long id) {
-        VehicleResponseDTO vehicle = vehicleService.findById(id);
+    public ResponseEntity<VehicleDetailsResponseDTO> findById(@PathVariable Long id) {
+        VehicleDetailsResponseDTO vehicle = vehicleService.findById(id);
 
         return ResponseEntity.ok(vehicle);
     }

@@ -1,5 +1,6 @@
 package com.dionathan.lavapro.customer;
 
+import com.dionathan.lavapro.customer.dto.CustomerDetailsResponseDTO;
 import com.dionathan.lavapro.customer.dto.CustomerRequestDTO;
 import com.dionathan.lavapro.customer.dto.CustomerResponseDTO;
 import com.dionathan.lavapro.customer.dto.CustomerUpdateRequestDTO;
@@ -36,9 +37,9 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerResponseDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<CustomerDetailsResponseDTO> findById(@PathVariable Long id) {
 
-        CustomerResponseDTO customer = customerService.findById(id);
+        CustomerDetailsResponseDTO customer = customerService.findById(id);
         return ResponseEntity.ok(customer);
     }
 

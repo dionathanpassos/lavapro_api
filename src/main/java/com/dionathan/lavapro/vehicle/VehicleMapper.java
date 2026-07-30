@@ -4,6 +4,7 @@ import com.dionathan.lavapro.company.Company;
 import com.dionathan.lavapro.customer.Customer;
 import com.dionathan.lavapro.customer.dto.CustomerResponseDTO;
 import com.dionathan.lavapro.customer.dto.CustomerSummaryResponseDTO;
+import com.dionathan.lavapro.vehicle.dto.VehicleDetailsResponseDTO;
 import com.dionathan.lavapro.vehicle.dto.VehicleRequestDTO;
 import com.dionathan.lavapro.vehicle.dto.VehicleResponseDTO;
 import com.dionathan.lavapro.vehicle.dto.VehicleUpdateRequestDTO;
@@ -39,11 +40,6 @@ public class VehicleMapper {
                 vehicle.getBrand(),
                 vehicle.getColor(),
                 vehicle.getYear(),
-                new CustomerSummaryResponseDTO(
-                        customer.getId(),
-                        customer.getName(),
-                        customer.getPhone()
-                ),
                 vehicle.getCreatedAt(),
                 vehicle.getUpdatedAt(),
                 vehicle.getDeletedAt()
@@ -76,5 +72,27 @@ public class VehicleMapper {
 
 
         return vehicle;
+    }
+
+    public VehicleDetailsResponseDTO fromEntityDetails(Vehicle vehicle) {
+
+        Customer customer = vehicle.getCustomer();
+
+        return new VehicleDetailsResponseDTO(
+                vehicle.getId(),
+                vehicle.getPlate(),
+                vehicle.getModel(),
+                vehicle.getBrand(),
+                vehicle.getColor(),
+                vehicle.getYear(),
+                vehicle.getCreatedAt(),
+                vehicle.getUpdatedAt(),
+                vehicle.getDeletedAt(),
+                new CustomerSummaryResponseDTO(
+                        customer.getId(),
+                        customer.getName(),
+                        customer.getPhone()
+                )
+        );
     }
 }

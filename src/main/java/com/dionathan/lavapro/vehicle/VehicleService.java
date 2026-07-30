@@ -8,6 +8,7 @@ import com.dionathan.lavapro.customer.CustomerRepository;
 import com.dionathan.lavapro.customer.dto.CustomerResponseDTO;
 import com.dionathan.lavapro.security.AuthenticatedUserService;
 import com.dionathan.lavapro.user.User;
+import com.dionathan.lavapro.vehicle.dto.VehicleDetailsResponseDTO;
 import com.dionathan.lavapro.vehicle.dto.VehicleRequestDTO;
 import com.dionathan.lavapro.vehicle.dto.VehicleResponseDTO;
 import com.dionathan.lavapro.vehicle.dto.VehicleUpdateRequestDTO;
@@ -48,14 +49,14 @@ public class VehicleService {
         return vehicleMapper.fromEntity(saved);
     }
 
-    public VehicleResponseDTO findById(Long id) {
+    public VehicleDetailsResponseDTO findById(Long id) {
 
         Company company = getCurrentCompany();
 
         Vehicle vehicle = vehicleRepository.findByIdAndCompanyAndDeletedAtIsNull(id, company)
                 .orElseThrow(() -> new ResourceNotFoundException("Veículo não encontrado"));
 
-        return vehicleMapper.fromEntity(vehicle);
+        return vehicleMapper.fromEntityDetails(vehicle);
     }
 
     @Transactional

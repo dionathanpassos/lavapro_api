@@ -1,6 +1,7 @@
 package com.dionathan.lavapro.customer;
 
 import com.dionathan.lavapro.company.Company;
+import com.dionathan.lavapro.vehicle.Vehicle;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity(name = "customer")
 @Table(name = "customers")
@@ -42,4 +44,7 @@ public class Customer {
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    private List<Vehicle> vehicles;
 }
