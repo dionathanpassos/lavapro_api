@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.extensibility.VerbExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -56,8 +59,14 @@ public class VehicleController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<VehicleResponseDTO>> findAll(Pageable pageable) {
-        Page<VehicleResponseDTO> vehicles = vehicleService.findAll(pageable);
+    public ResponseEntity<Page<VehicleResponseDTO>> findAll(
+            @RequestParam(required = false) String plate,
+            @RequestParam(required = false) String customer,
+            @RequestParam(required = false) String model,
+            @RequestParam(required = false) String brand,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<VehicleResponseDTO> vehicles = vehicleService.findAll(plate, customer, model, brand, pageable);
 
         return ResponseEntity.ok(vehicles);
     }

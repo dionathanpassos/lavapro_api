@@ -35,8 +35,8 @@ public class VehicleMapper {
         return new VehicleResponseDTO(
                 vehicle.getId(),
                 vehicle.getPlate(),
-                vehicle.getBrand(),
                 vehicle.getModel(),
+                vehicle.getBrand(),
                 vehicle.getColor(),
                 vehicle.getYear(),
                 new CustomerSummaryResponseDTO(
