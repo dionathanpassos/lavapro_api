@@ -1,5 +1,6 @@
 package com.dionathan.lavapro.user;
 
+import com.dionathan.lavapro.common.exception.BusinessException;
 import com.dionathan.lavapro.company.Company;
 import com.dionathan.lavapro.user.enums.Role;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-@Entity(name = "user")
+@Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"company_id", "email"})})
 @Getter
 @Setter
@@ -83,6 +85,42 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return this.active;
+    }
+
+    public void validateCanModifyUsers() {
+        if(role != Role.ROLE_OWNER) {
+            throw new BusinessException("Usuário não possui permissão para editar/criar usuários");
+        }
+    }
+
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
+    public void deactivate() {
+        if(!isActive()) {
+            throw new BusinessException("Usuário já desativado");
+        }
+        this.active = false;
+    }
+
+    public void activate() {
+        if(isActive()) {
+            throw new BusinessException("Usuário já ativo");
+        }
+        this.active = true;
+    }
+
+    public void updateRole(Role role) {
+        this.role = role;
     }
 }
