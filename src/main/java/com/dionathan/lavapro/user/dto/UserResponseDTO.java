@@ -9,6 +9,9 @@ public record UserResponseDTO(
         String name,
         String email,
         Role role,
-        LocalDateTime createdAt
+        boolean active,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+        LocalDateTime deletedAt
 ) {
 }
