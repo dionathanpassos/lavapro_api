@@ -10,6 +10,8 @@ public record VehicleSummaryResponseDTO(
         String plate,
         String model,
         String brand,
+        String color,
+        int year,
         CustomerSummaryResponseDTO customer
 
 ) {

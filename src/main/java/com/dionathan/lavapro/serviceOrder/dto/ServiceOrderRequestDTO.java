@@ -10,10 +10,6 @@ import java.math.BigDecimal;
 
 public record ServiceOrderRequestDTO(
 
-        @NotNull(message = "Total é obrigatório")
-        @Positive(message = "O valor não pode ser negativo")
-        BigDecimal totalAmount,
-
         @NotBlank(message = "Observação é obrigatporia")
         String observations,
 

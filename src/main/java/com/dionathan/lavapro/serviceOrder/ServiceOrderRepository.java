@@ -1,6 +1,7 @@
 package com.dionathan.lavapro.serviceOrder;
 
 import com.dionathan.lavapro.company.Company;
+import com.dionathan.lavapro.payment.PaymentStatus;
 import com.dionathan.lavapro.serviceOrder.dto.ServiceOrderResponseDTO;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
@@ -25,23 +26,47 @@ public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long
     Long countByCompanyAndStatus(Company company, ServiceOrderStatus serviceOrderStatus);
 
     Long countByCompanyAndStatusAndCreatedAtBetween(Company company, ServiceOrderStatus serviceOrderStatus, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    Long countByCompanyAndStatusNotAndCreatedAtBetween(Company company, ServiceOrderStatus serviceOrderStatus, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
-    @Query("SELECT s FROM ServiceOrder s " +
-            "JOIN s.vehicle v " +
-            "JOIN v.customer c " +
-            "WHERE s.company = :company " +
-            "AND (:status IS NULL OR s.status = :status) " +
-            "AND (:customer IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :customer, '%'))) " +
-            "AND (:plate IS NULL OR LOWER(v.plate) LIKE LOWER(CONCAT('%', :plate, '%'))) " +
-            "AND (:startDate IS NULL OR s.createdAt >= :startDate) " +
-            "AND (:endDate IS NULL OR s.createdAt <= :endDate) ")
-    Page<ServiceOrder> findAllByCompanyAndFilters(
-            @Param("company") Company company,
-            @Param("status") ServiceOrderStatus status,
-            @Param("customer") String customer,
-            @Param("plate") String plate,
-            @Param("startDate")LocalDateTime startDate,
-            @Param("endDate")LocalDateTime endDate,
-            Pageable pageable
-    );
+//    @Query("SELECT s FROM ServiceOrder s " +
+//            "JOIN s.vehicle v " +
+//            "JOIN v.customer c " +
+//            "WHERE s.company = :company " +
+//            "AND (:status IS NULL OR s.status = :status) " +
+//            "AND (:customer IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :customer, '%'))) " +
+//            "AND (:plate IS NULL OR LOWER(v.plate) LIKE LOWER(CONCAT('%', :plate, '%'))) " +
+//            "AND (:startDate IS NULL OR s.createdAt >= :startDate) " +
+//            "AND (:endDate IS NULL OR s.createdAt <= :endDate) ")
+//    Page<ServiceOrder> findAllByCompanyAndFilters(
+//            @Param("company") Company company,
+//            @Param("status") ServiceOrderStatus status,
+//            @Param("customer") String customer,
+//            @Param("plate") String plate,
+//            @Param("startDate")LocalDateTime startDate,
+//            @Param("endDate")LocalDateTime endDate,
+//            Pageable pageable
+//    );
+@Query(value = "SELECT s AS serviceOrder, " +
+        "(CASE WHEN EXISTS (SELECT 1 FROM Payment p WHERE p.serviceOrder = s AND p.paymentStatus = :paymentStatus) THEN true ELSE false END) AS isPaid " +
+        "FROM ServiceOrder s " +
+        "JOIN s.vehicle v " +
+        "JOIN v.customer c " +
+        "WHERE s.company = :company " +
+        "AND (:startDate IS NULL OR s.createdAt >= :startDate) " +
+        "AND (:endDate IS NULL OR s.createdAt <= :endDate) " +
+        "AND (:status IS NULL OR s.status = :status) " +
+        "AND (:search IS NULL OR :search = '' " +
+        "     OR LOWER(c.name) LIKE CONCAT('%', LOWER(:search), '%') " +
+        "     OR LOWER(v.plate) LIKE CONCAT('%', LOWER(:search), '%'))")
+Page<ServiceOrderProjection> findAllByCompanyAndFilters(
+        @Param("company") Company company,
+        @Param("status") ServiceOrderStatus status,
+        @Param("customer") String customer,
+        @Param("plate") String plate,
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate,
+        @Param("search") String search,
+        @Param("paymentStatus") PaymentStatus paymentStatus,
+        Pageable pageable
+);
 }

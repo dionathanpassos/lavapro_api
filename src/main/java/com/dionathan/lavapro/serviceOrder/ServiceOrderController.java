@@ -1,8 +1,6 @@
 package com.dionathan.lavapro.serviceOrder;
 
-import com.dionathan.lavapro.serviceOrder.dto.ServiceOrderRequestDTO;
-import com.dionathan.lavapro.serviceOrder.dto.ServiceOrderResponseDTO;
-import com.dionathan.lavapro.serviceOrder.dto.ServiceOrderUpdateRequestDTO;
+import com.dionathan.lavapro.serviceOrder.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -45,8 +43,8 @@ public class ServiceOrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ServiceOrderResponseDTO> findById(@PathVariable Long id) {
-        ServiceOrderResponseDTO serviceOrder = serviceOrderService.findById(id);
+    public ResponseEntity<ServiceOrderDetailsResponseDTO> findById(@PathVariable Long id) {
+        ServiceOrderDetailsResponseDTO serviceOrder = serviceOrderService.findById(id);
 
         return ResponseEntity.ok(serviceOrder);
     }
@@ -54,17 +52,25 @@ public class ServiceOrderController {
 
 
     @GetMapping
-    public ResponseEntity<Page<ServiceOrderResponseDTO>> findAll(
+    public ResponseEntity<Page<ServiceOrderProResponseDTO>> findAll(
             @RequestParam(required = false) ServiceOrderStatus status,
             @RequestParam(required = false) String customer,
             @RequestParam(required = false) String plate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) String search,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<ServiceOrderResponseDTO> serviceOrders = serviceOrderService.findAll(status, customer, plate, startDate, endDate, pageable);
+        Page<ServiceOrderProResponseDTO> serviceOrders = serviceOrderService.findAll(status, customer, plate, startDate, endDate, search, pageable);
 
         return ResponseEntity.ok(serviceOrders);
+    }
+
+    @GetMapping("/indicators")
+    public ResponseEntity<ServiceOrderIndicators> getIndicators() {
+        ServiceOrderIndicators indicators = serviceOrderService.getIndicators();
+
+        return ResponseEntity.ok(indicators);
     }
 
     @PatchMapping("/{id}/cancel")
