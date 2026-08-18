@@ -39,8 +39,14 @@ public class SecurityConfig {
         httpSecurity
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:5173"));
-                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    config.setAllowedOrigins(List.of(
+                            "http://192.168.15.14:5173",
+                            "http://127.0.0.1:5173",
+                            "http://192.168.15.14:5173",
+                            "http://localhost:5173"
+
+                    ));
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
                     return config;

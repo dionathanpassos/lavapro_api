@@ -21,6 +21,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Page<Payment> findAllByCompany(Company company, Pageable pageable);
 
+    List<Payment> findAllByCompanyAndServiceOrder(Company company, ServiceOrder serviceOrder);
+
     @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.company = :company AND p.paymentStatus = :status AND p.createdAt BETWEEN :startDate AND :endDate")
     BigDecimal sumRevenueByPeriod(
             @Param("company") Company company,
