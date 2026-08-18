@@ -13,14 +13,14 @@ public record VehicleRequestDTO(
         String plate,
 
         @NotBlank(message = "Modelo é obrigatório")
-        @Size(min = 2, max = 100)
+        @Size(min = 2, max = 100, message = "Deve conter no minimo 2 caracteres")
         String model,
 
         @NotBlank(message = "Marca é obrigatória")
         @Size(min = 2, max = 100)
         String brand,
 
-        @Size(min = 2, max = 50)
+        @Size(min = 2, max = 50, message = "Cor é obrigatório")
         String color,
 
         @Min(value = 1800, message = "Ano inválido")

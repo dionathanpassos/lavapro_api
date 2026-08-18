@@ -16,6 +16,8 @@ public class VehicleSummaryMapper {
                 vehicle.getPlate(),
                 vehicle.getModel(),
                 vehicle.getBrand(),
+                vehicle.getColor(),
+                vehicle.getYear(),
                 new CustomerSummaryResponseDTO(
                         customer.getId(),
                         customer.getName(),

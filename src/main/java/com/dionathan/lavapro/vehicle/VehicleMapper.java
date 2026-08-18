@@ -2,6 +2,7 @@ package com.dionathan.lavapro.vehicle;
 
 import com.dionathan.lavapro.company.Company;
 import com.dionathan.lavapro.customer.Customer;
+import com.dionathan.lavapro.customer.dto.CustomerDetailsResponseDTO;
 import com.dionathan.lavapro.customer.dto.CustomerResponseDTO;
 import com.dionathan.lavapro.customer.dto.CustomerSummaryResponseDTO;
 import com.dionathan.lavapro.vehicle.dto.VehicleDetailsResponseDTO;

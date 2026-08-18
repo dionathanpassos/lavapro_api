@@ -60,14 +60,15 @@ public class VehicleController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<VehicleResponseDTO>> findAll(
+    public ResponseEntity<Page<VehicleDetailsResponseDTO>> findAll(
             @RequestParam(required = false) String plate,
             @RequestParam(required = false) String customer,
             @RequestParam(required = false) String model,
             @RequestParam(required = false) String brand,
-            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @RequestParam(required = false) String search,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC, size = 10) Pageable pageable
     ) {
-        Page<VehicleResponseDTO> vehicles = vehicleService.findAll(plate, customer, model, brand, pageable);
+        Page<VehicleDetailsResponseDTO> vehicles = vehicleService.findAll(plate, customer, model, brand, search, pageable);
 
         return ResponseEntity.ok(vehicles);
     }

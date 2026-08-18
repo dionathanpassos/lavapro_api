@@ -24,16 +24,24 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     @Query("SELECT v FROM Vehicle v " +
             "JOIN v.customer c " +
             "WHERE v.company = :company " +
-            "AND (:plate IS NULL OR LOWER(v.plate) LIKE CONCAT('%', LOWER(:plate), '%')) " +
-            "AND (:model IS NULL OR LOWER(v.model) LIKE CONCAT('%', LOWER(:model), '%')) " +
-            "AND (:brand IS NULL OR LOWER(v.brand) LIKE CONCAT('%', LOWER(:brand), '%')) " +
-            "AND (:customer IS NULL OR LOWER(c.name) LIKE CONCAT('%', LOWER(:customer), '%')) ")
+            "AND ( " +
+            ":search IS NULL " +
+            "OR :search = '' " +
+            "OR LOWER(v.plate) LIKE CONCAT('%', LOWER(:search), '%') " +
+            "OR LOWER(v.model) LIKE CONCAT('%', LOWER(:search), '%') " +
+            "OR LOWER(v.brand) LIKE CONCAT('%', LOWER(:search), '%') " +
+            "OR LOWER(c.name) LIKE CONCAT('%', LOWER(:search), '%') " +
+            "OR LOWER(c.phone) LIKE CONCAT('%', LOWER(:search), '%') " +
+            ")"
+    )
     Page<Vehicle> findAllByCompanyAndFilters(
             Company company,
             String plate,
             String customer,
             String model,
             String brand,
+            String search,
             Pageable pageable
     );
 }
+

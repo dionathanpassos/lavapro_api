@@ -1,5 +1,6 @@
 package com.dionathan.lavapro.vehicle.dto;
 
+import com.dionathan.lavapro.customer.dto.CustomerDetailsResponseDTO;
 import com.dionathan.lavapro.customer.dto.CustomerResponseDTO;
 import com.dionathan.lavapro.customer.dto.CustomerSummaryResponseDTO;
 
