@@ -59,12 +59,13 @@ public class CustomerController {
 
     @GetMapping
     public ResponseEntity<Page<CustomerResponseDTO>> findAll(
-            @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC, size = 10) Pageable pageable,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String phone,
-            @RequestParam(required = false) String plate
+            @RequestParam(required = false) String plate,
+            @RequestParam(required = false) String search
     ) {
-        Page<CustomerResponseDTO> customers = customerService.findAll(pageable, name, phone, plate);
+        Page<CustomerResponseDTO> customers = customerService.findAll(name, phone, plate, search, pageable);
 
         return ResponseEntity.ok(customers);
     }

@@ -24,16 +24,21 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT c FROM customer c " +
             "LEFT JOIN Vehicle v ON v.customer = c " +
             "WHERE c.company = :company " +
-            "AND (:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
-            "AND (:phone IS NULL OR c.phone LIKE CONCAT('%', :phone, '%')) " +
-            "AND (:plate IS NULL OR LOWER(v.plate) LIKE LOWER(CONCAT('%', :plate, '%'))) ")
+            "AND (" +
+            ":search IS NULL " +
+            "OR :search = '' " +
+            "OR LOWER(c.name) LIKE CONCAT('%', LOWER(:search), '%') " +
+            "OR c.phone LIKE CONCAT('%', :search, '%') " +
+            "OR LOWER(v.plate) LIKE CONCAT('%', LOWER(:search), '%') " +
+            ") "
+    )
     Page<Customer> findAllByCompanyAndFilters(
-            Pageable pageable,
             Company company,
             String name,
             String phone,
-            String plate
-
+            String plate,
+            String search,
+            Pageable pageable
     );
 
     @Query("SELECT c FROM customer c " +
