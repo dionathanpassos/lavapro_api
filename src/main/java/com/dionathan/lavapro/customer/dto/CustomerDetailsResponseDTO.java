@@ -7,7 +7,7 @@ import java.util.List;
 
 public record CustomerDetailsResponseDTO(
         Long id,
-        String nome,
+        String name,
         String phone,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
