@@ -5,7 +5,8 @@ public record ServiceOrderDashboardDTO(
         Long inProgress,
         Long ready,
         Long delivered,
-        Long canceled
+        Long canceled,
+        Long totalMonth
 
 ) {
 }

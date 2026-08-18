@@ -40,14 +40,14 @@ public class DashboardService {
         CustomerDashboardDTO customers = getCustomerIndicators();
         FinancialDashboardDTO financial = getFinancialIndicators();
         CashFlowDashboardDTO cashFlow = getCashFlowIndicators();
-        BestSellingServiceDTO service = getServiceIndicators();
+        List<BestSellingServiceDTO> services = getServiceIndicators();
 
         return new DashboardResponseDTO(
                 serviceOrders,
                 customers,
                 financial,
                 cashFlow,
-                service
+                services
 
         );
     }
@@ -60,6 +60,7 @@ public class DashboardService {
         Company company = getCurrentCompany();
 
         DateRangeDTO currentDay = dateManager.getCustomDayRange(LocalDate.now());
+        DateRangeDTO currentMonth = dateManager.getCurrentMonthRange();
 
         Long waiting = serviceOrderRepository.countByCompanyAndStatusAndCreatedAtBetween(
                 company, ServiceOrderStatus.WAITING, currentDay.startDate(), currentDay.endDate());
@@ -76,12 +77,16 @@ public class DashboardService {
         Long canceled = serviceOrderRepository.countByCompanyAndStatusAndCreatedAtBetween(
                 company, ServiceOrderStatus.CANCELLED, currentDay.startDate(), currentDay.endDate());
 
+        Long totalMonth = serviceOrderRepository.countByCompanyAndStatusNotAndCreatedAtBetween(
+                company, ServiceOrderStatus.CANCELLED, currentMonth.startDate(), currentMonth.endDate());
+
         return new ServiceOrderDashboardDTO(
                 waiting,
                 inProgress,
                 ready,
                 delivered,
-                canceled
+                canceled,
+                totalMonth
         );
     }
 
@@ -112,9 +117,9 @@ public class DashboardService {
                 paymentRepository.countByCompanyAndPaymentStatusAndCreatedAtBetween(company, PaymentStatus.CANCELED, currentDay.startDate(), currentDay.endDate());
 
         Long countPaid =
-                paymentRepository.countByCompanyAndPaymentStatusAndCreatedAtBetween(company, PaymentStatus.PAID, currentDay.startDate(), currentDay.endDate());
+                paymentRepository.countByCompanyAndPaymentStatusAndCreatedAtBetween(company, PaymentStatus.PAID, currentMonth.startDate(), currentMonth.endDate());
 
-        BigDecimal averageTicket = calculateAverageTicket(countPaid, todayRevenue);
+        BigDecimal averageTicket = calculateAverageTicket(countPaid, monthRevenue);
 
         return new FinancialDashboardDTO(
                 monthRevenue,
@@ -155,16 +160,18 @@ public class DashboardService {
         );
     }
 
-    private BestSellingServiceDTO getServiceIndicators() {
+    private List<BestSellingServiceDTO> getServiceIndicators() {
         Company company = getCurrentCompany();
 
         DateRangeDTO currentMonth = dateManager.getCurrentMonthRange();
 
         List<BestSellingServiceDTO> services = serviceOrderItemRepository.findBestSellingService(company, currentMonth.startDate(), currentMonth.endDate(), PaymentStatus.PAID);
 
-        return services.stream()
-                .findFirst()
-                .orElse(new BestSellingServiceDTO("Nenhum serviço", 0L));
+        return services;
+
+//        services.stream()
+//                .findFirst()
+//                .orElse(new BestSellingServiceDTO("Nenhum serviço", 0L));
 
     }
 
