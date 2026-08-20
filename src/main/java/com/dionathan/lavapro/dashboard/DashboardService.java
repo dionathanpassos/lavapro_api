@@ -121,12 +121,16 @@ public class DashboardService {
 
         BigDecimal averageTicket = calculateAverageTicket(countPaid, monthRevenue);
 
+        List<FinancialDashboardGroupByDateDTO> revenueByDate =
+                paymentRepository.findAllByCompanyAndStatusAndCreatedAtBetweenGroupByCreatedAt(company, PaymentStatus.PAID, currentMonth.startDate(), currentMonth.endDate());
+
         return new FinancialDashboardDTO(
                 monthRevenue,
                 todayRevenue,
                 averageTicket,
                 countRefunded,
-                countPaid
+                countPaid,
+                revenueByDate
         );
     }
 

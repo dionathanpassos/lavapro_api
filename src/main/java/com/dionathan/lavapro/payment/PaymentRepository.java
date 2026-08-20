@@ -1,6 +1,7 @@
 package com.dionathan.lavapro.payment;
 
 import com.dionathan.lavapro.company.Company;
+import com.dionathan.lavapro.dashboard.dto.FinancialDashboardGroupByDateDTO;
 import com.dionathan.lavapro.serviceOrder.ServiceOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,5 +51,24 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             LocalDateTime startDate,
             LocalDateTime endDate,
             Pageable pageable
+    );
+
+    @Query("""
+    SELECT new com.dionathan.lavapro.dashboard.dto.FinancialDashboardGroupByDateDTO(
+        CAST(p.createdAt AS LocalDate),
+        SUM(p.amount)
+    )
+    FROM Payment p
+    WHERE p.company = :company
+      AND p.paymentStatus = :status
+      AND p.createdAt BETWEEN :startDate AND :endDate
+    GROUP BY DATE(p.createdAt)
+    ORDER BY DATE(p.createdAt)
+    """)
+    List<FinancialDashboardGroupByDateDTO> findAllByCompanyAndStatusAndCreatedAtBetweenGroupByCreatedAt(
+            @Param("company") Company company,
+            @Param("status") PaymentStatus status,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
     );
 }
