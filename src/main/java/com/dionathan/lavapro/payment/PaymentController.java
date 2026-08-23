@@ -1,5 +1,7 @@
 package com.dionathan.lavapro.payment;
 
+import com.dionathan.lavapro.payment.dto.PaymentIndicatorsDTO;
+import com.dionathan.lavapro.payment.dto.PaymentListResponseDTO;
 import com.dionathan.lavapro.payment.dto.PaymentResponseDTO;
 import com.dionathan.lavapro.payment.dto.PaymentRequestDTO;
 import jakarta.validation.Valid;
@@ -46,14 +48,15 @@ public class PaymentController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<PaymentResponseDTO>> findAll(
+    public ResponseEntity<Page<PaymentListResponseDTO>> findAll(
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(required = false) PaymentMethod paymentMethod,
             @RequestParam(required = false) PaymentStatus paymentStatus,
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate
             ) {
-        Page<PaymentResponseDTO> payments = paymentService.findAll(paymentMethod, paymentStatus, startDate, endDate, pageable);
+        Page<PaymentListResponseDTO> payments = paymentService.findAll(paymentMethod, paymentStatus, search, startDate, endDate, pageable);
 
         return ResponseEntity.ok(payments);
     }
@@ -63,6 +66,20 @@ public class PaymentController {
         PaymentResponseDTO payment = paymentService.findById(paymentId);
 
         return ResponseEntity.ok(payment);
+    }
+
+    @GetMapping("/indicators")
+    public ResponseEntity<PaymentIndicatorsDTO> getIndicators(
+            @RequestParam(required = false) PaymentMethod paymentMethod,
+            @RequestParam(required = false) PaymentStatus paymentStatus,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate,
+            @RequestParam(required = false) String search
+
+    ) {
+        PaymentIndicatorsDTO indicators = paymentService.getIndicators(paymentMethod, paymentStatus, startDate, endDate, search);
+
+        return ResponseEntity.ok(indicators);
     }
 
 }

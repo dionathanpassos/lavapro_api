@@ -139,15 +139,19 @@ public class ServiceOrderMapper {
 
         List<PaymentResponseDTO> paymentsList = payments.stream()
                 .map(payment -> new PaymentResponseDTO(
-                    payment.getId(),
-                    payment.getAmount(),
-                    payment.getPaymentMethod(),
-                    payment.getPaymentStatus(),
-                    payment.getPaidAt(),
-                    payment.getCreatedAt(),
-                    payment.getUpdatedAt(),
-                    payment.getCanceledAt(),
-                    payment.getServiceOrder().getId()
+                        payment.getId(),
+                        payment.getAmount(),
+                        payment.getPaymentMethod(),
+                        payment.getPaymentStatus(),
+                        payment.getPaidAt(),
+                        payment.getCreatedAt(),
+                        payment.getUpdatedAt(),
+                        payment.getCanceledAt(),
+                        payment.getServiceOrder().getId(),
+                        payment.getServiceOrder().getVehicle().getCustomer().getName(),
+                        payment.getServiceOrder().getVehicle().getPlate(),
+                        payment.getServiceOrder().getVehicle().getBrand(),
+                        payment.getServiceOrder().getVehicle().getModel()
 
                 )).toList();
         return new ServiceOrderDetailsResponseDTO(
