@@ -6,15 +6,12 @@ import com.dionathan.lavapro.payment.PaymentStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record PaymentResponseDTO(
+public record PaymentListResponseDTO(
         Long id,
         BigDecimal amount,
         PaymentMethod paymentMethod,
         PaymentStatus paymentStatus,
         LocalDateTime paidAt,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        LocalDateTime canceledAt,
         Long serviceOrderId,
         String customerName,
         String vehiclePlate,

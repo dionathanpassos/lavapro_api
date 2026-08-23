@@ -4,6 +4,8 @@ import com.dionathan.lavapro.cashFlow.CashFlowService;
 import com.dionathan.lavapro.common.exception.BusinessException;
 import com.dionathan.lavapro.common.exception.ResourceNotFoundException;
 import com.dionathan.lavapro.company.Company;
+import com.dionathan.lavapro.payment.dto.PaymentIndicatorsDTO;
+import com.dionathan.lavapro.payment.dto.PaymentListResponseDTO;
 import com.dionathan.lavapro.payment.dto.PaymentRequestDTO;
 import com.dionathan.lavapro.payment.dto.PaymentResponseDTO;
 import com.dionathan.lavapro.security.AuthenticatedUserService;
@@ -65,9 +67,10 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PaymentResponseDTO> findAll(
+    public Page<PaymentListResponseDTO> findAll(
             PaymentMethod paymentMethod,
             PaymentStatus paymentStatus,
+            String search,
             LocalDate startDate,
             LocalDate endDate,
             Pageable pageable
@@ -78,15 +81,16 @@ public class PaymentService {
         LocalDate end = (endDate != null) ? endDate : LocalDate.now();
         LocalDateTime endDateTime = end.atTime(LocalTime.MAX);
 
-        Page<Payment> payments = paymentRepository.findAllByCompanyAndFilters(
+        Page<PaymentListProjection> payments = paymentRepository.findAllByCompanyAndFilters(
                 company,
                 paymentMethod,
                 paymentStatus,
+                search,
                 startDateTime,
                 endDateTime,
                 pageable
         );
-        return payments.map(paymentMapper::fromEntity);
+        return payments.map(paymentMapper::fromProjection);
 
     }
 
@@ -104,4 +108,25 @@ public class PaymentService {
         return authenticatedUserService.getAuthenticatedUser().getCompany();
     }
 
+    @Transactional(readOnly = true)
+    public PaymentIndicatorsDTO getIndicators(
+            PaymentMethod paymentMethod,
+            PaymentStatus paymentStatus,
+            LocalDate startDate,
+            LocalDate endDate,
+            String search
+    ) {
+        Company company = getCurrentCompany();
+
+        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDate end = (endDate != null) ? endDate : LocalDate.now();
+        LocalDateTime endDateTime = end.atTime(LocalTime.MAX);
+
+        PaymentIndicatorsDTO indicators = paymentRepository.getPaymentIndicators(
+                company, paymentStatus, paymentMethod, startDateTime, endDateTime, search
+        );
+
+        return indicators != null ? indicators : new PaymentIndicatorsDTO(0L, 0L, 0L);
+
+    }
 }

@@ -1,6 +1,7 @@
 package com.dionathan.lavapro.payment;
 
 import com.dionathan.lavapro.company.Company;
+import com.dionathan.lavapro.payment.dto.PaymentListResponseDTO;
 import com.dionathan.lavapro.payment.dto.PaymentRequestDTO;
 import com.dionathan.lavapro.payment.dto.PaymentResponseDTO;
 import com.dionathan.lavapro.serviceOrder.ServiceOrder;
@@ -36,11 +37,30 @@ public class PaymentMapper {
                 payment.getCreatedAt(),
                 payment.getUpdatedAt(),
                 payment.getCanceledAt(),
-                payment.getServiceOrder().getId()
+                payment.getServiceOrder().getId(),
+                payment.getServiceOrder().getVehicle().getCustomer().getName(),
+                payment.getServiceOrder().getVehicle().getPlate(),
+                payment.getServiceOrder().getVehicle().getBrand(),
+                payment.getServiceOrder().getVehicle().getModel()
         );
     }
 
     public List<PaymentResponseDTO> fromEntity(List<Payment> payments) {
         return payments.stream().map(this::fromEntity).toList();
+    }
+
+    public PaymentListResponseDTO fromProjection(PaymentListProjection projection) {
+        return new PaymentListResponseDTO(
+                projection.getId(),
+                projection.getAmount(),
+                projection.getPaymentMethod(),
+                projection.getPaymentStatus(),
+                projection.getPaidAt(),
+                projection.getServiceOrderId(),
+                projection.getCustomerName(),
+                projection.getVehiclePlate(),
+                projection.getVehicleBrand(),
+                projection.getVehicleModel()
+        );
     }
 }
