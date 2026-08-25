@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -53,7 +55,7 @@ public class ServiceCatalogController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) ServiceCatalogType type,
             @RequestParam(defaultValue = "true") Boolean active,
-            Pageable pageable
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<ServiceCatalogResponseDTO> serviceCatalogs = serviceCatalogService.findAll(search, type, active,pageable);
 
