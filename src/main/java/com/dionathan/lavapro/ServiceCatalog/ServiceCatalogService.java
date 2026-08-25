@@ -1,5 +1,6 @@
 package com.dionathan.lavapro.ServiceCatalog;
 
+import com.dionathan.lavapro.ServiceCatalog.dto.ServiceCatalogIndicatorsDTO;
 import com.dionathan.lavapro.ServiceCatalog.dto.ServiceCatalogRequestDTO;
 import com.dionathan.lavapro.ServiceCatalog.dto.ServiceCatalogResponseDTO;
 import com.dionathan.lavapro.ServiceCatalog.dto.ServiceCatalogUpdateRequestDTO;
@@ -45,7 +46,7 @@ public class ServiceCatalogService {
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
 
         if(requestDTO.name() != null) {
-            if(catalogRepository.existsByCompanyAndNameIgnoreCase(company, requestDTO.name())){
+            if(catalogRepository.existsByCompanyAndNameIgnoreCaseAndIdNot(company, requestDTO.name(), serviceCatalog.getId())){
                 throw new BusinessException("Já existe um serviço com esse nome.");
             }
         }
@@ -67,16 +68,35 @@ public class ServiceCatalogService {
 
     }
 
+    @Transactional(readOnly = true)
+    public ServiceCatalogIndicatorsDTO getIndicators() {
+        Company company = getCurrentCompany();
+
+        Long totalProducts = catalogRepository.countByCompany(company);
+        Long totalActive = catalogRepository.countByCompanyAndActiveIsTrue(company);
+
+        return new ServiceCatalogIndicatorsDTO(
+                totalProducts,
+                totalActive
+        );
+    }
+
     private Company getCurrentCompany() {
         return authenticatedUserService.getAuthenticatedUser().getCompany();
     }
 
 
-    public Page<ServiceCatalogResponseDTO> findAll(Pageable pageable) {
+    public Page<ServiceCatalogResponseDTO> findAll(
+            String search,
+            ServiceCatalogType type,
+            Boolean active,
+            Pageable pageable
+    ) {
         Company company = getCurrentCompany();
 
-        return catalogRepository.findAllByCompany(company, pageable).map(serviceCatalogMapper::fromEntity);
+        Page<ServiceCatalog> products = catalogRepository.findAllByCompanyAndFilters(company, search, type, active, pageable);
 
+        return products.map(serviceCatalogMapper::fromEntity);
     }
 
     public void deactivate(Long id) {
@@ -106,4 +126,6 @@ public class ServiceCatalogService {
         serviceCatalog.setActive(true);
         catalogRepository.save(serviceCatalog);
     }
+
+
 }

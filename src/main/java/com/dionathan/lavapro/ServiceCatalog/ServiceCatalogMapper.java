@@ -56,7 +56,7 @@ public class ServiceCatalogMapper {
         return serviceCatalog;
     }
 
-    public List<ServiceCatalogResponseDTO> fromEntity(List<ServiceCatalog> serviceCatalogs) {
+    public List<ServiceCatalogResponseDTO> fromEntityList(List<ServiceCatalog> serviceCatalogs) {
         return serviceCatalogs.stream().map(this::fromEntity).toList();
     }
 }

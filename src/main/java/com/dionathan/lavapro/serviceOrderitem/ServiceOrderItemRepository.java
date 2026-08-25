@@ -17,7 +17,7 @@ public interface ServiceOrderItemRepository extends JpaRepository<ServiceOrderIt
 
     Optional<ServiceOrderItem> findByIdAndCompany(Long itemId, Company company);
 
-    @Query("SELECT i.serviceName, SUM(i.quantity) " +
+    @Query("SELECT i.serviceCatalog.name, SUM(i.quantity) " +
             "FROM ServiceOrderItem i " +
             "JOIN i.serviceOrder os " +
             "JOIN Payment p ON p.serviceOrder = os " +
@@ -26,7 +26,7 @@ public interface ServiceOrderItemRepository extends JpaRepository<ServiceOrderIt
             "AND i.createdAt BETWEEN :startDate AND :endDate " +
             "AND p.paymentStatus = :status " +
             "GROUP BY " +
-            "i.serviceName " +
+            "i.serviceCatalog.id, i.serviceCatalog.name " +
             "ORDER BY SUM(i.quantity) DESC ")
     List<BestSellingServiceDTO> findBestSellingService(
             @Param("company") Company company,

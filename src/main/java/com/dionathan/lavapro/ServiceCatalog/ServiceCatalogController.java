@@ -1,9 +1,9 @@
 package com.dionathan.lavapro.ServiceCatalog;
 
+import com.dionathan.lavapro.ServiceCatalog.dto.ServiceCatalogIndicatorsDTO;
 import com.dionathan.lavapro.ServiceCatalog.dto.ServiceCatalogRequestDTO;
 import com.dionathan.lavapro.ServiceCatalog.dto.ServiceCatalogResponseDTO;
 import com.dionathan.lavapro.ServiceCatalog.dto.ServiceCatalogUpdateRequestDTO;
-import jakarta.persistence.Entity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,10 +49,22 @@ public class ServiceCatalogController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ServiceCatalogResponseDTO>> findAll(Pageable pageable) {
-        Page<ServiceCatalogResponseDTO> serviceCatalogs = serviceCatalogService.findAll(pageable);
+    public ResponseEntity<Page<ServiceCatalogResponseDTO>> findAll(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) ServiceCatalogType type,
+            @RequestParam(defaultValue = "true") Boolean active,
+            Pageable pageable
+    ) {
+        Page<ServiceCatalogResponseDTO> serviceCatalogs = serviceCatalogService.findAll(search, type, active,pageable);
 
         return ResponseEntity.ok(serviceCatalogs);
+    }
+
+    @GetMapping("/indicators")
+    public ResponseEntity<ServiceCatalogIndicatorsDTO> getIndicators() {
+        ServiceCatalogIndicatorsDTO indicators = serviceCatalogService.getIndicators();
+
+        return ResponseEntity.ok(indicators);
     }
 
     @PatchMapping("/{id}/deactivate")
