@@ -54,7 +54,7 @@ public class ServiceCatalogController {
     public ResponseEntity<Page<ServiceCatalogResponseDTO>> findAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) ServiceCatalogType type,
-            @RequestParam(defaultValue = "true") Boolean active,
+            @RequestParam(required = false) Boolean active,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<ServiceCatalogResponseDTO> serviceCatalogs = serviceCatalogService.findAll(search, type, active,pageable);
