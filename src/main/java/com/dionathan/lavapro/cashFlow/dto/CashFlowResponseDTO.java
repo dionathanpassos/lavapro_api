@@ -15,7 +15,10 @@ public record CashFlowResponseDTO(
         LocalDateTime updatedAt,
         Long companyId,
         Long serviceOrderId,
-        Long paymentId
+        Long paymentId,
+        String paymentMethod,
+        String customerName,
+        String vehiclePlate
 
 ) {
 }

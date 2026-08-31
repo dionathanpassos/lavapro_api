@@ -33,7 +33,10 @@ public class CashFlowMapper {
                 cashFlow.getUpdatedAt(),
                 cashFlow.getCompany().getId(),
                 cashFlow.getServiceOrder().getId(),
-                cashFlow.getPayment().getId()
+                cashFlow.getPayment().getId(),
+                cashFlow.getPayment().getPaymentMethod().name(),
+                cashFlow.getServiceOrder().getVehicle().getCustomer().getName(),
+                cashFlow.getServiceOrder().getVehicle().getPlate()
         );
     }
 
