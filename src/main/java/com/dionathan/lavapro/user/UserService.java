@@ -4,10 +4,7 @@ import com.dionathan.lavapro.common.exception.BusinessException;
 import com.dionathan.lavapro.common.exception.ResourceNotFoundException;
 import com.dionathan.lavapro.company.Company;
 import com.dionathan.lavapro.security.AuthenticatedUserService;
-import com.dionathan.lavapro.user.dto.UserRequestDTO;
-import com.dionathan.lavapro.user.dto.UserResponseDTO;
-import com.dionathan.lavapro.user.dto.UserUpdateProfileRequestDTO;
-import com.dionathan.lavapro.user.dto.UserUpdateRequestDTO;
+import com.dionathan.lavapro.user.dto.*;
 import com.dionathan.lavapro.user.enums.Role;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,9 +44,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Page<UserResponseDTO> findAll(String name, Pageable pageable) {
+    public Page<UserResponseDTO> findAll(
+            String name,
+            Boolean active,
+            Pageable pageable) {
         Company company = getCurrentCompany();
-        Page<User> users = userRepository.findAllByCompanyAndFilters(company, name, pageable);
+        Page<User> users = userRepository.findAllByCompanyAndFilters(company, name, active, pageable);
         return users.map(userMapper::fromEntity);
     }
 
@@ -80,6 +80,9 @@ public class UserService {
                 throw new BusinessException("Email já cadastrado");
             }
             user.updateEmail(requestDTO.email());
+        }
+        if(requestDTO.phone() != null) {
+            user.updatePhone(requestDTO.phone());
         }
         if(requestDTO.role() != null) {
             user.updateRole(requestDTO.role());
@@ -118,7 +121,6 @@ public class UserService {
         user.activate();
 
         return userMapper.fromEntity(user);
-
     }
 
     @Transactional(readOnly = true)
@@ -153,6 +155,10 @@ public class UserService {
         return authenticatedUserService.getAuthenticatedUser().getCompany();
     }
 
+    @Transactional(readOnly = true)
+    public UserIndicatorsDTO getIndicators(String name, Boolean active) {
+        Company company = getCurrentCompany();
 
-
+        return userRepository.getIndicators(company, name, active);
+    }
 }

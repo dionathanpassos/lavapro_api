@@ -32,6 +32,7 @@ public class User implements UserDetails {
     private Long id;
 
     private String name;
+    private String phone;
 
     @Column(unique = true)
     private String email;
@@ -93,6 +94,11 @@ public class User implements UserDetails {
             throw new BusinessException("Usuário não possui permissão para editar/criar usuários");
         }
     }
+    public void validateCanBeDeactivate() {
+        if(role == Role.ROLE_OWNER) {
+            throw new BusinessException("Usuário proprietário não pode ser desativado");
+        }
+    }
 
     public void updatePassword(String encodedPassword) {
         this.password = encodedPassword;
@@ -102,11 +108,16 @@ public class User implements UserDetails {
         this.name = name;
     }
 
+    public void updatePhone(String phone) {
+        this.phone = phone;
+    }
+
     public void updateEmail(String email) {
         this.email = email;
     }
 
     public void deactivate() {
+        validateCanBeDeactivate();
         if(!isActive()) {
             throw new BusinessException("Usuário já desativado");
         }

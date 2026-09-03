@@ -33,6 +33,7 @@ public class UserMapper {
         User user = new User();
 
         user.setName(requestDTO.name());
+        user.setPhone(requestDTO.phone());
         user.setEmail(requestDTO.email().trim().toLowerCase());
         user.setPassword(encodedPassword);
         user.setRole(requestDTO.role());
@@ -46,6 +47,7 @@ public class UserMapper {
         return new UserResponseDTO(
                 user.getId(),
                 user.getName(),
+                user.getPhone(),
                 user.getEmail(),
                 user.getRole(),
                 user.isActive(),

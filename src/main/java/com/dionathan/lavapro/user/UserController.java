@@ -1,13 +1,12 @@
 package com.dionathan.lavapro.user;
 
-import com.dionathan.lavapro.user.dto.UserRequestDTO;
-import com.dionathan.lavapro.user.dto.UserResponseDTO;
-import com.dionathan.lavapro.user.dto.UserUpdateProfileRequestDTO;
-import com.dionathan.lavapro.user.dto.UserUpdateRequestDTO;
+import com.dionathan.lavapro.user.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,11 +29,22 @@ public class UserController {
     @PreAuthorize("hasRole('OWNER') or hasRole('ADMIN')")
     public ResponseEntity<Page<UserResponseDTO>> findAll(
             @RequestParam(required = false) String name,
-            Pageable pageable
+            @RequestParam(required = false) Boolean active,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<UserResponseDTO> users = userService.findAll(name, pageable);
+        Page<UserResponseDTO> users = userService.findAll(name, active, pageable);
 
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/indicators")
+    public ResponseEntity<UserIndicatorsDTO> getIndicators (
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Boolean active
+    ) {
+        UserIndicatorsDTO indicators = userService.getIndicators(name, active);
+
+        return ResponseEntity.ok(indicators);
     }
 
     @GetMapping("/{id}")
