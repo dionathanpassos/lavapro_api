@@ -137,5 +137,25 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(error);
     }
 
+    @ExceptionHandler(UserDisabledException.class)
+    public ResponseEntity<ExceptionResponseDTO> handleUserDisabled(
+            UserDisabledException ex,
+            HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.FORBIDDEN;
+
+        ExceptionResponseDTO error = new ExceptionResponseDTO(
+                status.value(),
+                status.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                request.getMethod(),
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(status).body(error);
+    }
+
 
 }

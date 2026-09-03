@@ -4,6 +4,7 @@ import com.dionathan.lavapro.auth.dto.AuthLoginRequestDTO;
 import com.dionathan.lavapro.auth.dto.AuthResponseDTO;
 import com.dionathan.lavapro.auth.dto.AuthSignUpRequestDTO;
 import com.dionathan.lavapro.common.exception.BusinessException;
+import com.dionathan.lavapro.common.exception.UserDisabledException;
 import com.dionathan.lavapro.company.Company;
 import com.dionathan.lavapro.company.CompanyMapper;
 import com.dionathan.lavapro.company.CompanyRepository;
@@ -18,6 +19,7 @@ import com.dionathan.lavapro.user.enums.Role;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -70,12 +72,17 @@ public class AuthService {
 
     public AuthResponseDTO login(AuthLoginRequestDTO requestDTO) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        requestDTO.email(),
-                        requestDTO.password()
-                )
-        );
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            requestDTO.email(),
+                            requestDTO.password()
+                    )
+            );
+        } catch (DisabledException e) {
+            throw new UserDisabledException("Sua conta está desativada. Entre em contato com o administrador.");
+        }
 
         User user = (User) authentication.getPrincipal();
         String token = jwtService.generateToken(user);
