@@ -23,7 +23,8 @@ public interface ServiceOrderItemRepository extends JpaRepository<ServiceOrderIt
             "JOIN Payment p ON p.serviceOrder = os " +
             "WHERE " +
             "i.company = :company " +
-            "AND i.createdAt BETWEEN :startDate AND :endDate " +
+            "AND (:startDate IS NULL OR i.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR i.createdAt <= :endDate) " +
             "AND p.paymentStatus = :status " +
             "GROUP BY " +
             "i.serviceCatalog.id, i.serviceCatalog.name " +

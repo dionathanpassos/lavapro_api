@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,4 +47,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             "WHERE c.company = :company " +
             "AND c.id = :id ")
     Optional<Customer> findByIdAndCompanyWithVehicles(Long id, Company company);
+
+    @Query("SELECT COUNT(c) FROM customer c " +
+            "WHERE c.company = :company " +
+            "AND (:startDate IS NULL OR c.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR c.createdAt <= :endDate) ")
+    Long countByPeriod(Company company, LocalDateTime startDate, LocalDateTime endDate);
 }

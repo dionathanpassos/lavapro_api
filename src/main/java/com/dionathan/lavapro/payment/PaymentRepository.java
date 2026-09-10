@@ -3,6 +3,8 @@ package com.dionathan.lavapro.payment;
 import com.dionathan.lavapro.company.Company;
 import com.dionathan.lavapro.dashboard.dto.FinancialDashboardGroupByDateDTO;
 import com.dionathan.lavapro.payment.dto.PaymentIndicatorsDTO;
+import com.dionathan.lavapro.report.dto.PaymentSummaryDTO;
+import com.dionathan.lavapro.report.projection.PaymentMethodSummaryProjection;
 import com.dionathan.lavapro.serviceOrder.ServiceOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,20 +20,73 @@ import java.util.Optional;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     boolean existsByServiceOrderAndPaymentStatus(ServiceOrder serviceOrder, PaymentStatus paymentStatus);
-
     Optional<Payment> findByIdAndCompany(Long id, Company company);
-
-    Page<Payment> findAllByCompany(Company company, Pageable pageable);
-
     List<Payment> findAllByCompanyAndServiceOrder(Company company, ServiceOrder serviceOrder);
 
-    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.company = :company AND p.paymentStatus = :status AND p.createdAt BETWEEN :startDate AND :endDate")
+    @Query("SELECT COALESCE(SUM(p.amount), 0) " +
+            "FROM Payment p WHERE p.company = :company " +
+            "AND (:startDate IS NULL OR p.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR p.createdAt <= :endDate) " +
+            "AND p.paymentStatus = :status ")
     BigDecimal sumRevenueByPeriod(
             @Param("company") Company company,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             @Param("status") PaymentStatus status
             );
+
+    @Query("SELECT COUNT(DISTINCT p.serviceOrder.vehicle.customer) " +
+            "FROM Payment p WHERE p.company = :company " +
+            "AND (:startDate IS NULL OR p.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR p.createdAt <= :endDate) " +
+            "AND p.paymentStatus = :status ")
+    Long countDistinctCustomersByPeriod(
+            @Param("company") Company company,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("status") PaymentStatus status
+    );
+
+    @Query("SELECT COUNT(p) " +
+            "FROM Payment p WHERE p.company = :company " +
+            "AND (:startDate IS NULL OR p.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR p.createdAt <= :endDate) " +
+            "AND p.paymentStatus = :status ")
+    Long countByPeriod(
+            @Param("company") Company company,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("status") PaymentStatus status
+    );
+
+    @Query("SELECT p.paymentMethod AS paymentMethod, " +
+            "SUM(p.amount) AS totalAmount " +
+            "FROM Payment p " +
+            "WHERE p.company = :company " +
+            "AND (:startDate IS NULL OR p.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR p.createdAt <= :endDate) " +
+            "AND p.paymentStatus = :status " +
+            "GROUP BY p.paymentMethod " +
+            "ORDER BY SUM(p.amount) DESC " )
+    List<PaymentMethodSummaryProjection> findTotalAmountGroupedByMethod(
+            @Param("company") Company company,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("status") PaymentStatus status
+    );
+
+    @Query("SELECT COUNT(DISTINCT p.serviceOrder) " +
+            "FROM Payment p " +
+            "WHERE p.company = :company " +
+            "AND (:startDate IS NULL OR p.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR p.createdAt <= :endDate) " +
+            "AND p.paymentStatus = :status " )
+    Long countDistinctPaidServiceOrdersByPeriod(
+            @Param("company") Company company,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("status") PaymentStatus status
+    );
 
     Long countByCompanyAndPaymentStatusAndCreatedAtBetween(
             Company company,
@@ -82,7 +137,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     FROM Payment p
     WHERE p.company = :company
       AND p.paymentStatus = :status
-      AND p.createdAt BETWEEN :startDate AND :endDate
+      AND (:startDate IS NULL OR p.createdAt >= :startDate)
+      AND (:endDate IS NULL OR p.createdAt <= :endDate)
     GROUP BY DATE(p.createdAt)
     ORDER BY DATE(p.createdAt)
     """)
@@ -92,8 +148,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
-
-    Long countByCompanyAndPaymentStatus(Company company, PaymentStatus paymentStatus);
 
     @Query("SELECT new com.dionathan.lavapro.payment.dto.PaymentIndicatorsDTO(" +
             "  COUNT(p), " +
