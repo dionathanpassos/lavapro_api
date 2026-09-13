@@ -43,7 +43,8 @@ public class SecurityConfig {
                             "http://192.168.15.14:5173",
                             "http://127.0.0.1:5173",
                             "http://192.168.15.14:5173",
-                            "http://localhost:5173"
+                            "http://localhost:5173",
+                            "https://lavapro.dionathanpassos.com.br"
 
                     ));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
