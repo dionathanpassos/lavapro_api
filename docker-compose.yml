@@ -32,6 +32,7 @@ services:
       retries: 10
 
   api:
+    image: lavapro-api
     build:
       context: .
       dockerfile: Dockerfile
