@@ -305,8 +305,6 @@ Exemplo para o frontend:
 VITE_API_URL=http://localhost:8080/api
 ```
 
-> Arquivos `.env` e informações sensíveis não devem ser versionados.
-
 ------------------------------------------------------------------------
 
 ## 🐳 Docker
